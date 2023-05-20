@@ -5,7 +5,8 @@
 </template>
 
 <script setup lang="ts">
-
+  const testTemp = "2131231231";
+        console.log(testTemp);
 </script>
 
 <style scoped>
