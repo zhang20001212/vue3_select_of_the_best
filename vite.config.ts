@@ -45,11 +45,11 @@ export default defineConfig(({ command, mode }) => {
           // 路径重写
           rewrite: (path) => path.replace(/^\/api/, ""),
         },
-        "/upload-api":{
-          target:"http://39.98.123.211:8510",
-          changeOrigin:true,
+        "/upload-api": {
+          target: "http://39.98.123.211:8510",
+          changeOrigin: true,
           rewrite: (path) => path.replace(/^\/upload-api/, ""),
-        }
+        },
       },
     },
   };

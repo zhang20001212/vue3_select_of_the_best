@@ -266,9 +266,21 @@ const handleEditTradeMark = (row: TradeMarkItem) => {
  * table中删除按钮的回调也是popconfirm的confirm事件的回调函数
  * @param row 点击table表格中删除按钮当前的对象
  */
-const handleRemoveTradeMark = (row: TradeMarkItem) => {
+const handleRemoveTradeMark = async (row: TradeMarkItem) => {
   // 进行网络请求
-  reqDeleteTradeMark(row.id as number);
+  const result = await reqDeleteTradeMark(row.id as number);
+  if (result.code === 200) {
+    ElMessage({
+      type: "success",
+      message: `删除品牌${result.message}`,
+    });
+    getTradeMark();
+  } else {
+    ElMessage({
+      type: "error",
+      message: `删除品牌${result.message}`,
+    });
+  }
 };
 /**
  * dialog取消按钮回调函数

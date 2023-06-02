@@ -1,13 +1,7 @@
 <template>
-    <div>
-        数据大屏
-    </div>
+  <div>数据大屏</div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup></script>
 
-</script>
-
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

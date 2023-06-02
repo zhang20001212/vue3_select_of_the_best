@@ -1,3 +1,3 @@
 export default {
-    title:"臻品甄选",
-}
+  title: "臻品甄选",
+};
