@@ -1,2 +1,13 @@
 @import url(../style/reset.scss);
 
+.el-breadcrumb__inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+
+// .el-scrollbar__bar{
+//   display: none;
+// }

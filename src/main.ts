@@ -14,6 +14,7 @@ import App from "./App.vue";
 import globalComponent from "@/components";
 import router from "@/router/index";
 import pinia from "@/store/index";
+import "./permission";
 // 获取应用组件实例
 const app = createApp(App);
 // 使用elementplusUI组件库

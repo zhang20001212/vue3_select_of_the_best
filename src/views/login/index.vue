@@ -58,11 +58,17 @@ let loading = ref(false);
 let form = ref();
 let loginFormData = reactive({
   username: "admin",
-  password: "111111",
+  password: "atguigu123",
 });
 const rules = reactive<FormRules>({
   username: [
-    { required: true,min: 5, max: 10, message: "用户名长度为5-10位", trigger: "change" },
+    {
+      required: true,
+      min: 5,
+      max: 10,
+      message: "用户名长度为5-10位",
+      trigger: "change",
+    },
   ],
   password: [{ required: true, message: "密码不能为空", trigger: "blur" }],
 });
@@ -72,14 +78,15 @@ const timerRange = getDate();
  * 登录按钮的回调
  */
 const handleLogin = async () => {
-  await form.value.validate()
+  await form.value.validate();
   loading.value = true;
   // 点击后通知仓库进行api请求
   // 请求成功跳转到首页
   // 失败的话弹出信息
   try {
     await useUserStore().login(loginFormData);
-    router.push({ path: "/" });
+    await useUserStore().fetchUserInfo();
+    await router.push({ name: "dashboard" });
     ElNotification({
       type: "success",
       message: "登陆成功",

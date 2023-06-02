@@ -1,38 +1,34 @@
-// 登录接口需要携带的参数类型
-export type LoginFrom = {
+// 用户相关的数据模型
+// 用户登录数据模型
+export interface LoginFromData {
   username: string;
   password: string;
-};
+}
 
-type DataType = {
-  token?: string;
-  message?: string;
-};
-
-// 请求返回的数据类型
-export type LoginResponseData = {
+// 所有接口共有的数据类型
+export interface ResponseData {
   code: number;
-  data: DataType;
-};
+  message: string;
+  ok: boolean;
+}
 
-type CheckUser = {
-  userId: number;
-  avatar: string;
-  username: string;
-  password: string;
-  desc: string;
-  roles: Array<string>;
-  buttons: Array<string>;
-  routes: Array<string>;
-  token: string;
-};
+// 登录接口返回数据类型
+export interface LoginResponseData extends ResponseData {
+  data: string;
+}
 
-type UserInfo = {
-  checkUser: CheckUser;
-};
+// 获取用户信息返回的数据类型
+export interface UserInfoResponseData extends ResponseData {
+  data: {
+    routes: Array<string>;
+    buttons: Array<string>;
+    roles: Array<string>;
+    name: string;
+    avatar: string;
+  };
+}
 
-// 定义服务器返回用户信息的数据类型
-export type UserResponseData = {
-  code: number;
-  data: UserInfo;
-};
+// 退出登录返回的数据类型
+export interface LogoutResponseData extends ResponseData {
+  data: null;
+}
