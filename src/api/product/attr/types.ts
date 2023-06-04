@@ -17,15 +17,20 @@ export interface AttrResponseData extends ResponseData {
 }
 
 export type Attr = {
-  id: number | string;
+  id?: number | string;
   attrName: string;
-  categoryId: number;
+  categoryId: number | string;
   categoryLevel: number;
   attrValueList: Array<AttrValue>;
 };
 
 export type AttrValue = {
-  id: number | string;
+  id?: number | string;
   valueName: string;
-  attrId: number;
+  attrId?: number;
+  flag?: boolean;
 };
+
+export interface AddOrMOdifyAttrResponseData extends ResponseData {
+  data: null | string;
+}

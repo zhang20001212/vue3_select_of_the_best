@@ -59,11 +59,6 @@ const useCategoryStore = defineStore("category", {
       this.categoryTwo = [];
       this.categoryThree = [];
     },
-    // 获取已经分类好的所有的属性和属性值
-    async getAttrValue() {
-      const result = await reqAllAttr(this.c1Id, this.c2Id, this.c3Id);
-      console.log(result);
-    },
   },
   getters: {},
 });
