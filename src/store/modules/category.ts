@@ -1,5 +1,4 @@
 import {
-  reqAllAttr,
   reqGetCategory1,
   reqGetCategory2,
   reqGetCategory3,

@@ -1,4 +1,4 @@
-import { Attr, CategoryItem } from "@/api/product/attr/types";
+import { CategoryItem } from "@/api/product/attr/types";
 import { RouteRecordRaw } from "vue-router";
 
 // 定义分模块仓库数据类型
