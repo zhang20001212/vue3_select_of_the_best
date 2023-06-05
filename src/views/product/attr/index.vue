@@ -37,17 +37,24 @@
           </el-table-column>
           <el-table-column label="操作" width="120px">
             <template #="{ row }">
+              <el-popconfirm
+                :title="`你去确定删除${row.attrName}吗?`"
+                width="200px"
+                @confirm="handleDeleteAttr(row.id)"
+              >
+                <template #reference>
+                  <el-button
+                    type="danger"
+                    size="small"
+                    icon="Delete"
+                  ></el-button>
+                </template>
+              </el-popconfirm>
               <el-button
                 type="warning"
                 size="small"
                 @click="handleEditAttr(row)"
                 icon="Edit"
-              ></el-button>
-              <el-button
-                type="danger"
-                size="small"
-                @click="handleDeleteAttr(row)"
-                icon="Delete"
               ></el-button>
             </template>
           </el-table-column>
@@ -126,10 +133,11 @@
 import { reqAddOrModifyAttr, reqAllAttr } from "@/api/product/attr";
 import { AttrValue } from "@/api/product/attr/types";
 import { Attr } from "@/api/product/attr/types";
+import { reqDeleteAttr } from "@/api/product/attr";
 import useCategoryStore from "@/store/modules/category";
 // @ts-ignore
 import { ElMessage } from "element-plus";
-import { ref, watch, reactive, nextTick } from "vue";
+import { ref, watch, reactive, nextTick, onBeforeUnmount } from "vue";
 // 分类仓库
 const categoryStore = useCategoryStore();
 // 已经分好类的所有的属性和属性值  响应式
@@ -272,17 +280,36 @@ const handleAddAttrValue = () => {
 /**
  * 点击table表格中修改按钮修改Attr事件的回调
  */
-const handleEditAttr = (item: Attr) => {
-  console.log(item.id);
+const handleEditAttr = (rowItem: Attr) => {
   // 修改visibility的值为1 切换为添加与修改属性的table结构
   visibility.value = 1;
+  // 将点击的rowItem对象赋值给attrParams
+  // TODO:用户点击取消时，还是会保存当前值，此处需要进行一次深拷贝，将深拷贝的值在赋值给attrParams
+  Object.assign(attrParams, JSON.parse(JSON.stringify(rowItem)));
 };
 
 /**
  * 点击table表格中删除按钮删除Attr事件的回调
  */
-const handleDeleteAttr = (item: Attr) => {
-  console.log(item);
+const handleDeleteAttr = async (id: number) => {
+  // 进行网络请求
+  const result = await reqDeleteAttr(id);
+  // code判断
+  if (result.code === 200) {
+    // 成功进行全局提示
+    ElMessage({
+      type: "success",
+      message: `删除属性${result.message}`,
+    });
+    // 再次获取所有的属性
+    getAllAttr();
+  } else {
+    // 失败进行全局提示
+    ElMessage({
+      type: "error",
+      message: `删除属性${result.message}`,
+    });
+  }
 };
 
 /**
@@ -308,6 +335,12 @@ watch(
     categoryStore.c3Id && getAllAttr();
   }
 );
+
+// 每次路由切换,三级联动选择器里的数据并不会进行销毁,因为使用了全局状态管理,所以在每一次销毁之前进行仓库数据的清空
+onBeforeUnmount(() => {
+  // 调用pinia身上自带的reset方法进行仓库数据所有的清空
+  categoryStore.$reset();
+});
 </script>
 
 <script lang="ts">

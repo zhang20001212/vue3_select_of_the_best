@@ -5,7 +5,6 @@ import {
   ResponseTradeMarkData,
   TradeMarkItem,
 } from "./types";
-import { ResponseData } from "@/api/user/type";
 
 // 枚举API
 enum API {

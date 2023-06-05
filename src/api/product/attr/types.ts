@@ -31,6 +31,10 @@ export type AttrValue = {
   flag?: boolean;
 };
 
-export interface AddOrMOdifyAttrResponseData extends ResponseData {
+export interface AddOrModifyAttrResponseData extends ResponseData {
+  data: null | string;
+}
+
+export interface DeleteAttrResponseData extends ResponseData {
   data: null | string;
 }
