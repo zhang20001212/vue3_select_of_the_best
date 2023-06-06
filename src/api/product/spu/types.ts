@@ -1,9 +1,14 @@
 import { ResponseData } from "@/api/user/type";
 
 // SPU的数据模型
-export interface SpuResponseDate<T> extends ResponseData {
+export interface SpuResponseDate extends ResponseData {
   data: {
-    records: Array<T>;
+    records: Array<SpuItem>;
+    total: number;
+    size: number;
+    current: number;
+    pages: number;
+    searchCount: boolean;
   };
 }
 

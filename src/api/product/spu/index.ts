@@ -1,6 +1,7 @@
 // SPU管理模块接口
 
 import request from "@/utils/request";
+import { SpuResponseDate } from "./types";
 
 // 枚举API所的接口
 enum API {
@@ -19,7 +20,7 @@ export const reqGetSpu = (
   page: number,
   limit: number,
   c3Id: number | string
-) => {
+): Promise<SpuResponseDate> => {
   return request({
     url: API.GET_SPU_URL + `/${page}/${limit}`,
     method: "GET",
