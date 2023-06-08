@@ -7,6 +7,8 @@ import {
   SpuImageListResponseData,
   SpuSaleAttrListResponseData,
   BaseSaleAttrResponseData,
+  SpuItem,
+  AddOrModifySpuResponseData,
 } from "./types";
 
 // 枚举API所的接口
@@ -21,6 +23,10 @@ enum API {
   SPU_SALE_ATTR_LIST_URL = "/admin/product/spuSaleAttrList",
   // 平台所有的销售属性[颜色，版本，尺码]
   ALL_SALE_ATTR_URL = "/admin/product/baseSaleAttrList",
+  // 新增一个新的SPU
+  ADD_SPU_URL = "/admin/product/saveSpuInfo",
+  // 更新已有的SPU
+  MODIFY_SPU_URL = "/admin/product/updateSpuInfo",
 }
 
 /**
@@ -76,7 +82,7 @@ export const reqGetSpuSaleAttrList = (
   id: number
 ): Promise<SpuSaleAttrListResponseData> => {
   return request({
-    url: API.SPU_SALE_ATTR_LIST_URL + `${id}`,
+    url: API.SPU_SALE_ATTR_LIST_URL + `/${id}`,
     method: "GET",
   });
 };
@@ -89,3 +95,28 @@ export const reqGetAllBaseSaleAttrList =
       method: "GET",
     });
   };
+
+/**
+ * 更新或新增一个SPU
+ * @param data Spu参数
+ * @returns any
+ */
+export const reqAddOrModifySpu = (
+  data: SpuItem
+): Promise<AddOrModifySpuResponseData> => {
+  // 修改一个SPU
+  if (data.id) {
+    return request({
+      url: API.ADD_SPU_URL,
+      method: "POST",
+      data,
+    });
+  } else {
+    // 新增一个SPU
+    return request({
+      url: API.MODIFY_SPU_URL,
+      method: "POST",
+      data,
+    });
+  }
+};

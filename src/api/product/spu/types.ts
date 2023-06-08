@@ -13,16 +13,19 @@ export interface SpuResponseData extends ResponseData {
   };
 }
 
-// TODO:测试时没有拿到spuSaleAttrList和spuImageList所以，以后需要修改这些类型
 export type SpuItem = {
   id?: number;
   spuName: string;
   description: string;
   category3Id: number | string;
-  tmId: number;
-  spuSaleAttrList: null;
-  spuImageList: null;
+  tmId: number | string;
+  spuSaleAttrList: Array<SpuSaleAttrItem> | null;
+  spuImageList: Array<SpuImageItem> | null;
 };
+
+export interface AddOrModifySpuResponseData extends ResponseData {
+  data: null | string;
+}
 
 export interface SpuTradeMarkAttributeResponseData extends ResponseData {
   data: Array<TradeMarkItem>;
@@ -33,12 +36,14 @@ export interface SpuImageListResponseData extends ResponseData {
 }
 
 export type SpuImageItem = {
-  id: number;
-  createTime: string;
-  updateTime: string;
-  spuId: string;
+  id?: number;
+  createTime?: string | null;
+  updateTime?: string | null;
+  spuId?: string;
   imgName: string;
   imgUrl: string;
+  name?: string;
+  url?: string;
 };
 
 export interface SpuSaleAttrListResponseData extends ResponseData {
@@ -49,7 +54,7 @@ export type SpuSaleAttrItem = {
   id?: number;
   createTime?: string | null;
   updateTime?: string | null;
-  spuId: number;
+  spuId?: number;
   baseSaleAttrId: number;
   saleAttrName: string;
   spuSaleAttrValueList: Array<SpuSaleAttrValueItem>;
@@ -59,11 +64,11 @@ export type SpuSaleAttrValueItem = {
   id?: number;
   createTime?: string | null;
   updateTime?: string | null;
-  spuId: number;
+  spuId?: number;
   baseSaleAttrId: number;
   saleAttrValueName: string;
-  saleAttrName: string;
-  isChecked: null | boolean;
+  saleAttrName?: string;
+  isChecked?: null | boolean;
 };
 
 export interface BaseSaleAttrResponseData extends ResponseData {
