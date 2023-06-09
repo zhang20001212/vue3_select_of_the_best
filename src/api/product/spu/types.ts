@@ -58,6 +58,8 @@ export type SpuSaleAttrItem = {
   baseSaleAttrId: number;
   saleAttrName: string;
   spuSaleAttrValueList: Array<SpuSaleAttrValueItem>;
+  flag?: boolean;
+  attrValue?: string;
 };
 
 export type SpuSaleAttrValueItem = {

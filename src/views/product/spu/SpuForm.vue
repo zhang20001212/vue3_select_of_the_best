@@ -32,6 +32,7 @@
           :on-preview="handlePictureCardPreview"
           :on-remove="handlePictureRemove"
           :before-upload="handlePictureBeforeUpload"
+          :on-success="handlePictureUploadSuccess"
         >
           <el-icon><Plus /></el-icon>
         </el-upload>
@@ -46,16 +47,28 @@
       </el-form-item>
       <el-form-item label="SPU销售属性">
         <!-- 展示销售属性的下拉菜单 -->
-        <el-select>
-          <el-option label="华为"></el-option>
-          <el-option label="Vivo"></el-option>
-          <el-option label="Apple"></el-option>
+        <el-select
+          v-model="saleAttrAndAttrValue"
+          :placeholder="
+            unSelectSaleAttr.length
+              ? `还有${unSelectSaleAttr.length}个未选择`
+              : '无'
+          "
+        >
+          <el-option
+            v-for="item in unSelectSaleAttr"
+            :key="item.id"
+            :label="item.name"
+            :value="`${item.id}:${item.name}`"
+          ></el-option>
         </el-select>
         <el-button
           type="primary"
           size="default"
           icon="Plus"
           style="margin-left: 10px"
+          :disabled="saleAttrAndAttrValue !== '' ? false : true"
+          @click="handleClickBtnToAddingAttrValue"
           >添加属性值</el-button
         >
         <!-- table展示销售属性和属性值数据的区域 -->
@@ -66,19 +79,37 @@
             width="80px"
             align="center"
           />
-          <el-table-column label="属性名" width="100px" prop="saleAttrName">
-          </el-table-column>
+          <el-table-column label="属性名" width="100px" prop="saleAttrName" />
           <el-table-column label="属性值">
             <template #="{ row }">
               <el-tag
-                v-for="tag in row.spuSaleAttrValueList"
+                style="margin-left: 10px"
+                v-for="(tag, index) in row.spuSaleAttrValueList"
                 :key="tag.id"
                 closable
                 :disable-transitions="false"
-                style="margin-left: 10px"
+                @close="row.spuSaleAttrValueList.splice(index, 1)"
               >
                 {{ tag.saleAttrValueName }}
               </el-tag>
+              <el-input
+                ref="Input"
+                v-if="row.flag === true"
+                v-model="row.attrValue"
+                style="width: 70px; margin-left: 10px"
+                placeholder="属性名"
+                size="small"
+                clearable
+                @blur="handleBlurChangeToButtonModel(row)"
+              ></el-input>
+              <el-button
+                v-else
+                style="margin-left: 10px"
+                type="primary"
+                size="small"
+                icon="Plus"
+                @click="handleClickChangeToInputModel(row)"
+              ></el-button>
             </template>
           </el-table-column>
           <el-table-column label="操作" width="80px">
@@ -97,14 +128,19 @@
         <el-button type="normal" size="default" @click="onModifyVisibility"
           >取消</el-button
         >
-        <el-button type="primary" size="default">保存</el-button>
+        <el-button type="primary" size="default" @click="handleClickBtnSaveSpu"
+          >保存</el-button
+        >
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reqGetAllBaseSaleAttrList } from "@/api/product/spu";
+import {
+  reqAddOrModifySpu,
+  reqGetAllBaseSaleAttrList,
+} from "@/api/product/spu";
 import {
   reqGetSpuImageList,
   reqGetSpuSaleAttrList,
@@ -115,6 +151,7 @@ import {
   SpuImageItem,
   SpuItem,
   SpuSaleAttrItem,
+  SpuSaleAttrValueItem,
 } from "@/api/product/spu/types";
 import { TradeMarkItem } from "@/api/product/trademark/types";
 // @ts-ignore
@@ -125,7 +162,7 @@ import { UploadProps } from "element-plus";
 import { UploadRawFile } from "element-plus";
 // @ts-ignore
 import { ElMessage } from "element-plus";
-import { computed, reactive, ref } from "vue";
+import { computed, nextTick, reactive, ref } from "vue";
 // 控制dialog的显示/隐藏
 let dialogVisible = ref<boolean>(false);
 // dialog显示的图片
@@ -147,6 +184,10 @@ let spuParams = reactive<SpuItem>({
   spuImageList: [],
   spuSaleAttrList: [],
 });
+// 收集将来还没有被选择的属性id和属性名
+let saleAttrAndAttrValue = ref<string>("");
+// input的组件实例
+let Input = ref<HTMLInputElement>();
 let emit = defineEmits(["modifyVisibility"]);
 // 点击取消按钮的函数回调
 const onModifyVisibility = () => {
@@ -185,9 +226,6 @@ const initSpuFormData = async (spuItem: SpuItem) => {
           });
           allSpuSaleAttr.value = spuSaleAttrResult.data;
           allSaleAttr.value = baseSaleAttrResult.data;
-          for (const key in allSpuImageList.value) {
-            console.log(Object.keys(allSpuImageList.value[key]));
-          }
         }
       }
     }
@@ -234,15 +272,89 @@ const handlePictureBeforeUpload = (rawFile: UploadRawFile) => {
 };
 // upload组件中on-remove 的事件回调
 const handlePictureRemove = () => {};
+// upload组件中on-success的事件回调
+const handlePictureUploadSuccess = (response: any, uploadFile: UploadFile) => {
+  allSpuImageList.value[allSpuImageList.value.length - 1].imgUrl =
+    response.data;
+  allSpuImageList.value[allSpuImageList.value.length - 1].imgName =
+    uploadFile.name;
+};
+// 点击添加属性值按钮事件回调
+const handleClickBtnToAddingAttrValue = () => {
+  // 将收集好字段通过split方法进行切割并通过数组解构的方式提取id和name
+  const [id, name] = saleAttrAndAttrValue.value.split(":");
+  const newObj: SpuSaleAttrItem = {
+    baseSaleAttrId: Number(id),
+    saleAttrName: name,
+    spuSaleAttrValueList: [],
+  };
+  // 追加到数组当中
+  allSpuSaleAttr.value.push(newObj);
+  // 清空掉以前收集的数据
+  saleAttrAndAttrValue.value = "";
+};
+// 点击添加属性值按钮事件的回调
+const handleClickChangeToInputModel = (rowItem: SpuSaleAttrItem) => {
+  // 点击按钮显示input输入框切换成为编辑模式
+  rowItem.flag = true;
+  rowItem.attrValue = "";
+  nextTick(() => {
+    // input框自动获取焦点
+    Input.value?.focus();
+  });
+};
+// Input框失去焦点触发的事件回调
+const handleBlurChangeToButtonModel = (rowItem: SpuSaleAttrItem) => {
+  // 从当前的rowItem中解构出所需要的数据
+  const { baseSaleAttrId, attrValue } = rowItem;
+  // 将得到的数据整理成对应格式
+  const newObj: SpuSaleAttrValueItem = {
+    baseSaleAttrId,
+    saleAttrValueName: String(attrValue),
+  };
+  // 输入的属性值不能为空
+  if (attrValue?.trim() === "") {
+    ElMessage({
+      type: "error",
+      message: "属性值不能为空",
+    });
+    return;
+  }
+  // 输入的属性值不能和前面的属性值相同
+  let repeatObj = rowItem.spuSaleAttrValueList.find((item) => {
+    return item.saleAttrValueName === attrValue;
+  });
+  // 输入的属性值和前面重复进行提示
+  if (repeatObj) {
+    ElMessage({
+      type: "error",
+      message: "属性值不能相同",
+    });
+    return;
+  }
+  // 进行添加数据
+  rowItem.spuSaleAttrValueList.push(newObj);
+  // 切换为button模式
+  rowItem.flag = false;
+};
 // 计算出当前SPU下未拥有的销售属性
 let unSelectSaleAttr = computed(() => {
   // 过滤掉当前SPU下已拥有的属性
   return allSaleAttr.value.filter((item) => {
+    // every会返回true或者false
     return allSpuSaleAttr.value.every((ele) => {
       return item.name !== ele.saleAttrName;
     });
   });
 });
+// 点击保存按钮的事件回调
+const handleClickBtnSaveSpu = () => {
+  // 将各个收集好的数据进行整理并且合并
+  spuParams.spuImageList = allSpuImageList.value;
+  spuParams.spuSaleAttrList = allSpuSaleAttr.value;
+  // 发送请求
+  reqAddOrModifySpu(spuParams);
+};
 // 由于setup语法糖不会对外进行暴露方法，需要使用组合式函数defineExpose方法进行暴露需要使用的数据及方法
 defineExpose({ initSpuFormData });
 </script>
