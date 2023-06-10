@@ -105,18 +105,16 @@ export const reqAddOrModifySpu = (
   data: SpuItem
 ): Promise<AddOrModifySpuResponseData> => {
   // 修改一个SPU
-  if (!data.id) {
-    console.log("@@@@@新增");
+  if (data.id) {
     return request({
-      url: API.ADD_SPU_URL,
+      url: API.MODIFY_SPU_URL,
       method: "POST",
       data,
     });
   } else {
-    console.log("@@@@@修改");
     // 新增一个SPU
     return request({
-      url: API.MODIFY_SPU_URL,
+      url: API.ADD_SPU_URL,
       method: "POST",
       data,
     });

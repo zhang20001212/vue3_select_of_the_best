@@ -133,21 +133,30 @@ const handleSizeChange = () => {
 // 点击修改SPU按钮时的方法回调
 const updateSpuItem = (row: SpuItem) => {
   // 调用子组件的初始化数据方法
-  spu.value?.initSpuFormData(row);
+  spu.value?.initModifySpuFormData(row);
   // 膝盖visibility的值为1，切换到添加或修改的场景
   visibility.value = 1;
 };
 
 // 点击添加SPU按钮时的方法回调
 const handleClickAddSpuItem = () => {
+  // 调用子组件的初始化数据方法
+  spu.value?.initAddSpuFormData(categoryStore.c3Id);
   // 修改visibility的值为1，切换到添加或修改场景
   visibility.value = 1;
 };
 
 // 自定义事件modifyVisibility的事件回调
-const changeVisibility = (val: number) => {
+const changeVisibility = (obj: { flag: number; params: string }) => {
   // 将子组件传递过来的值赋值给visibility切换回场景0展示table表格显示所有的SPU信息
-  visibility.value = val;
+  visibility.value = obj.flag;
+  // 判断是更新还是新增
+  if (obj.params === "update") {
+    getSpuList(pageNo.value);
+  }
+  if (obj.params === "add") {
+    getSpuList();
+  }
 };
 
 // 监听c3Id的变化，再次发送请求，获取SPU信息

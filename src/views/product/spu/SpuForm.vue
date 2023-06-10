@@ -128,7 +128,11 @@
         <el-button type="normal" size="default" @click="onModifyVisibility"
           >取消</el-button
         >
-        <el-button type="primary" size="default" @click="handleClickBtnSaveSpu"
+        <el-button
+          type="primary"
+          size="default"
+          :disabled="allSpuSaleAttr.length > 0 ? false : true"
+          @click="handleClickBtnSaveSpu"
           >保存</el-button
         >
       </el-form-item>
@@ -189,13 +193,28 @@ let saleAttrAndAttrValue = ref<string>("");
 // input的组件实例
 let Input = ref<HTMLInputElement>();
 let emit = defineEmits(["modifyVisibility"]);
+let clearObj = {
+  spuName: "",
+  description: "",
+  tmId: "",
+  category3Id: "",
+  spuImageList: [],
+  spuSaleAttrList: [],
+};
+function clearableObj() {
+  allSpuImageList.value = [];
+  allSpuSaleAttr.value = [];
+  saleAttrAndAttrValue.value = "";
+  Object.assign(spuParams, clearObj);
+  delete spuParams.id;
+}
 // 点击取消按钮的函数回调
 const onModifyVisibility = () => {
   // 触发自定义事件
-  emit("modifyVisibility", 0);
+  emit("modifyVisibility", {flag:0,params:"update"});
 };
-// 初始化SpuForm组件中的数据
-const initSpuFormData = async (spuItem: SpuItem) => {
+// 初始化修改的SpuForm组件中的数据
+const initModifySpuFormData = async (spuItem: SpuItem) => {
   // 将spuItem赋值给spuParams
   Object.assign(spuParams, spuItem);
   // spuItem为父组件传递过的数据，利用spuItem中的属性进行网络请求
@@ -229,6 +248,29 @@ const initSpuFormData = async (spuItem: SpuItem) => {
         }
       }
     }
+  }
+};
+// 初始化新增的SpuForm组件中的数据
+const initAddSpuFormData = async (c3Id: number | string) => {
+  // 每次新增SPU之前清空数据
+  clearableObj();
+  // 存储三级id
+  spuParams.category3Id = c3Id;
+  // 获取全部品牌数据
+  const tradeMarkResult = await reqGetTradeMarkAllAttribute();
+  // 获取平台的所有基础属性
+  const baseSaleAttrResult = await reqGetAllBaseSaleAttrList();
+  // code判断成功失败
+  if (tradeMarkResult.code === 200 && baseSaleAttrResult.code === 200) {
+    // 存储所有的品牌属性
+    allTradeMark.value = tradeMarkResult.data;
+    // 存储平台的所有基础属性
+    allSaleAttr.value = baseSaleAttrResult.data;
+  } else {
+    ElMessage({
+      type: "error",
+      message: `初始化数据失败`,
+    });
   }
 };
 // upload组件中on-preview的事件回调
@@ -348,15 +390,32 @@ let unSelectSaleAttr = computed(() => {
   });
 });
 // 点击保存按钮的事件回调
-const handleClickBtnSaveSpu = () => {
+const handleClickBtnSaveSpu = async () => {
   // 将各个收集好的数据进行整理并且合并
   spuParams.spuImageList = allSpuImageList.value;
   spuParams.spuSaleAttrList = allSpuSaleAttr.value;
   // 发送请求
-  reqAddOrModifySpu(spuParams);
+  const result = await reqAddOrModifySpu(spuParams);
+  // code进行判断成功失败
+  if (result.code === 200) {
+    ElMessage({
+      type: "success",
+      message: spuParams.id ? `更新${result.message}` : `添加${result.message}`,
+    });
+    // 切换为默认场景
+    emit("modifyVisibility", {
+      flag: 0,
+      params: spuParams.id ? "update" : "add",
+    });
+  } else {
+    ElMessage({
+      type: "error",
+      message: spuParams.id ? `更新${result.message}` : `添加${result.message}`,
+    });
+  }
 };
 // 由于setup语法糖不会对外进行暴露方法，需要使用组合式函数defineExpose方法进行暴露需要使用的数据及方法
-defineExpose({ initSpuFormData });
+defineExpose({ initModifySpuFormData, initAddSpuFormData });
 </script>
 
 <script lang="ts">
