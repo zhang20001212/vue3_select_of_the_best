@@ -83,7 +83,7 @@ export const constantRoutes: Array<RouteRecordRaw> = [
             path: "skulist",
             name: "sku-list",
             component: () => import("@/views/product/sku/index.vue"),
-            meta: { title: "SPU管理", icon: "Apple" },
+            meta: { title: "SKU管理", icon: "Apple" },
           },
         ],
       },

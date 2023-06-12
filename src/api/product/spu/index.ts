@@ -9,6 +9,8 @@ import {
   BaseSaleAttrResponseData,
   SpuItem,
   AddOrModifySpuResponseData,
+  SkuItem,
+  AddSkuResponse,
 } from "./types";
 
 // 枚举API所的接口
@@ -27,6 +29,8 @@ enum API {
   ADD_SPU_URL = "/admin/product/saveSpuInfo",
   // 更新已有的SPU
   MODIFY_SPU_URL = "/admin/product/updateSpuInfo",
+  // 添加一个SKU
+  ADD_SKU_URL = "/admin/product/saveSkuInfo",
 }
 
 /**
@@ -119,4 +123,17 @@ export const reqAddOrModifySpu = (
       data,
     });
   }
+};
+
+/**
+ * 新增一个SKU
+ * @param data 添加的一个SKU对象 SkuItem
+ * @returns AddSkuResponse
+ */
+export const reqAddSku = (data: SkuItem): Promise<AddSkuResponse> => {
+  return request({
+    url: API.ADD_SKU_URL,
+    method: "POST",
+    data,
+  });
 };

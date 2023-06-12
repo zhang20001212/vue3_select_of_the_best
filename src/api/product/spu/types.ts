@@ -60,6 +60,7 @@ export type SpuSaleAttrItem = {
   spuSaleAttrValueList: Array<SpuSaleAttrValueItem>;
   flag?: boolean;
   attrValue?: string;
+  saleIdAndValueId?: number | string;
 };
 
 export type SpuSaleAttrValueItem = {
@@ -80,4 +81,30 @@ export interface BaseSaleAttrResponseData extends ResponseData {
 export type BaseSaleAttrItem = {
   id: number;
   name: string;
+};
+
+export interface AddSkuResponse extends ResponseData {
+  data: null;
+}
+
+export interface SkuItem {
+  category3Id: string | number;
+  spuId?: string | number;
+  tmId: string | number;
+  skuName: string;
+  price: string | number;
+  weight: string | number;
+  skuDesc: string;
+  skuAttrValueList: Array<SkuAttrValueItem>;
+  skuSaleAttrValueList: Array<SkuSaleAttrValueItem>;
+  skuDefaultImg: string;
+}
+
+export type SkuAttrValueItem = {
+  attrId: string | number;
+  valueId: string | number;
+};
+export type SkuSaleAttrValueItem = {
+  saleAttrId: string | number;
+  saleAttrValueId: string | number;
 };

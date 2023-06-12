@@ -193,15 +193,18 @@ let saleAttrAndAttrValue = ref<string>("");
 // input的组件实例
 let Input = ref<HTMLInputElement>();
 let emit = defineEmits(["modifyVisibility"]);
-let clearObj = {
-  spuName: "",
-  description: "",
-  tmId: "",
-  category3Id: "",
-  spuImageList: [],
-  spuSaleAttrList: [],
-};
+
+// 清空数据函数
 function clearableObj() {
+  // 清空数据的对象数据
+  let clearObj = {
+    spuName: "",
+    description: "",
+    tmId: "",
+    category3Id: "",
+    spuImageList: [],
+    spuSaleAttrList: [],
+  };
   allSpuImageList.value = [];
   allSpuSaleAttr.value = [];
   saleAttrAndAttrValue.value = "";
@@ -211,7 +214,7 @@ function clearableObj() {
 // 点击取消按钮的函数回调
 const onModifyVisibility = () => {
   // 触发自定义事件
-  emit("modifyVisibility", {flag:0,params:"update"});
+  emit("modifyVisibility", { flag: 0, params: "update" });
 };
 // 初始化修改的SpuForm组件中的数据
 const initModifySpuFormData = async (spuItem: SpuItem) => {

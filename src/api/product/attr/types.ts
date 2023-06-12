@@ -22,6 +22,7 @@ export type Attr = {
   categoryId: number | string;
   categoryLevel: number;
   attrValueList: Array<AttrValue>;
+  attrIdAndValueId?: number | string;
 };
 
 export type AttrValue = {

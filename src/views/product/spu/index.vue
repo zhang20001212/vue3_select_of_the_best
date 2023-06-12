@@ -35,6 +35,7 @@
                 size="small"
                 icon="Plus"
                 title="添加SKU"
+                @click="handleClickAddSkuItem(row)"
               ></el-button>
               <el-button
                 type="warning"
@@ -73,11 +74,15 @@
       <!-- 添加Spu和修改Spu结构 -->
       <SpuForm
         v-show="visibility === 1"
-        ref="spu"
+        ref="SPU"
         @modifyVisibility="changeVisibility"
       ></SpuForm>
       <!-- 添加一个Sku的结构 -->
-      <SkuForm v-show="visibility === 2"></SkuForm>
+      <SkuForm
+        v-show="visibility === 2"
+        ref="SKU"
+        @modifyVisibility="changeVisibility"
+      ></SkuForm>
     </el-card>
   </div>
 </template>
@@ -102,7 +107,8 @@ let categoryStore = useCategoryStore();
 // 响应式数据records
 let records = ref<Array<SpuItem>>([]);
 // SpuForm组件的实例
-let spu = ref<InstanceType<typeof SpuForm>>();
+let SPU = ref<InstanceType<typeof SpuForm>>();
+let SKU = ref<InstanceType<typeof SkuForm>>();
 /**
  * 获取Spu方法
  * @param pager 页码数，如果没有修改默认为1
@@ -133,7 +139,7 @@ const handleSizeChange = () => {
 // 点击修改SPU按钮时的方法回调
 const updateSpuItem = (row: SpuItem) => {
   // 调用子组件的初始化数据方法
-  spu.value?.initModifySpuFormData(row);
+  SPU.value?.initModifySpuFormData(row);
   // 膝盖visibility的值为1，切换到添加或修改的场景
   visibility.value = 1;
 };
@@ -141,7 +147,7 @@ const updateSpuItem = (row: SpuItem) => {
 // 点击添加SPU按钮时的方法回调
 const handleClickAddSpuItem = () => {
   // 调用子组件的初始化数据方法
-  spu.value?.initAddSpuFormData(categoryStore.c3Id);
+  SPU.value?.initAddSpuFormData(categoryStore.c3Id);
   // 修改visibility的值为1，切换到添加或修改场景
   visibility.value = 1;
 };
@@ -152,11 +158,21 @@ const changeVisibility = (obj: { flag: number; params: string }) => {
   visibility.value = obj.flag;
   // 判断是更新还是新增
   if (obj.params === "update") {
+    // 更新的情况停留在当前页数
     getSpuList(pageNo.value);
   }
   if (obj.params === "add") {
+    // 新增回到第一页
     getSpuList();
   }
+};
+
+// 给当前的Spu追加一个商品Sku
+const handleClickAddSkuItem = (row:SpuItem) => {
+  // 切换为添加SKU场景页面
+  visibility.value = 2;
+  // 在父组件中触发子组件中初始化方法
+  SKU.value?.initSkuData(categoryStore.c1Id,categoryStore.c2Id,row);
 };
 
 // 监听c3Id的变化，再次发送请求，获取SPU信息
