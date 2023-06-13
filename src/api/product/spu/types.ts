@@ -108,3 +108,7 @@ export type SkuSaleAttrValueItem = {
   saleAttrId: string | number;
   saleAttrValueId: string | number;
 };
+
+export interface SkuListResponseData extends ResponseData {
+  data: Array<SkuItem>;
+}

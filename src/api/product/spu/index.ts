@@ -11,6 +11,7 @@ import {
   AddOrModifySpuResponseData,
   SkuItem,
   AddSkuResponse,
+  SkuListResponseData,
 } from "./types";
 
 // 枚举API所的接口
@@ -31,6 +32,8 @@ enum API {
   MODIFY_SPU_URL = "/admin/product/updateSpuInfo",
   // 添加一个SKU
   ADD_SKU_URL = "/admin/product/saveSkuInfo",
+  // 展示某一个SPU下的所有的SKU
+  VIEW_FIND_BY_ID_SKU_URL = "/admin/product/findBySpuId",
 }
 
 /**
@@ -135,5 +138,19 @@ export const reqAddSku = (data: SkuItem): Promise<AddSkuResponse> => {
     url: API.ADD_SKU_URL,
     method: "POST",
     data,
+  });
+};
+
+/**
+ * 获取某一个spu下的所有的sku
+ * @param id 某一个SPU的id
+ * @returns SkuListResponseData
+ */
+export const reqGetSkuList = (
+  id: number | string
+): Promise<SkuListResponseData> => {
+  return request({
+    url: API.VIEW_FIND_BY_ID_SKU_URL + `/${id}`,
+    method: "GET",
   });
 };

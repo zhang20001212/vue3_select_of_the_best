@@ -49,6 +49,7 @@
                 size="small"
                 icon="View"
                 title="查看SKU已有列表"
+                @click="handleClickViewOneSkuList(row)"
               ></el-button>
               <el-button
                 type="danger"
@@ -84,16 +85,22 @@
         @modifyVisibility="changeVisibility"
       ></SkuForm>
     </el-card>
+    <dialogSku
+      v-model:show="show"
+      :skuInfo="skuInfo"
+      v-if="show === true"
+    ></dialogSku>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reqGetSpu } from "@/api/product/spu";
-import { SpuItem } from "@/api/product/spu/types";
+import { reqGetSkuList, reqGetSpu } from "@/api/product/spu";
+import { SkuItem, SpuItem } from "@/api/product/spu/types";
 import useCategoryStore from "@/store/modules/category";
 import { ref, watch } from "vue";
 import SpuForm from "./SpuForm.vue";
 import SkuForm from "./SkuForm.vue";
+import dialogSku from "./dialogSku.vue";
 // 控制三级联动分类组件是否禁用 0->三级联动选择器可使用，并且表示显示已有的SPU场景  1 -> 禁用三级联动选择器，表示添加或修改SPU  2 ->  添加SKU场景
 let visibility = ref<number>(0);
 // 分页器默认页码
@@ -109,6 +116,10 @@ let records = ref<Array<SpuItem>>([]);
 // SpuForm组件的实例
 let SPU = ref<InstanceType<typeof SpuForm>>();
 let SKU = ref<InstanceType<typeof SkuForm>>();
+// 某一个Sku的信息
+let skuInfo = ref<Array<SkuItem>>([]);
+// 控制dialog显示与隐藏
+let show = ref<boolean>(false);
 /**
  * 获取Spu方法
  * @param pager 页码数，如果没有修改默认为1
@@ -168,13 +179,25 @@ const changeVisibility = (obj: { flag: number; params: string }) => {
 };
 
 // 给当前的Spu追加一个商品Sku
-const handleClickAddSkuItem = (row:SpuItem) => {
+const handleClickAddSkuItem = (row: SpuItem) => {
   // 切换为添加SKU场景页面
   visibility.value = 2;
   // 在父组件中触发子组件中初始化方法
-  SKU.value?.initSkuData(categoryStore.c1Id,categoryStore.c2Id,row);
+  SKU.value?.initSkuData(categoryStore.c1Id, categoryStore.c2Id, row);
 };
 
+// 查看某一个SKU列表数据
+const handleClickViewOneSkuList = async (row: SpuItem) => {
+  // 进行网络请求
+  const result = await reqGetSkuList(row.id as number);
+  // code码进行判断
+  if (result.code === 200) {
+    // 成功存储数据
+    skuInfo.value = result.data;
+    // 展示dialogSKU
+    show.value = true;
+  }
+};
 // 监听c3Id的变化，再次发送请求，获取SPU信息
 watch(
   () => categoryStore.c3Id,
