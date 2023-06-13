@@ -86,7 +86,9 @@ export type BaseSaleAttrItem = {
 export interface AddSkuResponse extends ResponseData {
   data: null;
 }
-
+export interface DeleteSpuResponse extends ResponseData {
+  data: null | string;
+}
 export interface SkuItem {
   category3Id: string | number;
   spuId?: string | number;

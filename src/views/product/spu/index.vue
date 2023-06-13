@@ -51,12 +51,27 @@
                 title="查看SKU已有列表"
                 @click="handleClickViewOneSkuList(row)"
               ></el-button>
-              <el-button
-                type="danger"
-                size="small"
-                icon="Delete"
-                title="删除SPU"
-              ></el-button>
+              <el-popconfirm
+                :title="`确定删除${row.spuName}吗?`"
+                width="200px"
+                confirmButtonText="确定"
+                cancelButtonText="取消"
+                confirmButtonType="primary"
+                cancelButtonType="text"
+                icon="el-icon-question"
+                iconColor="#f90"
+                hideIcon="false"
+                @confirm="handleClickDeleteOneSpuItem(row)"
+              >
+                <template #reference
+                  ><el-button
+                    type="danger"
+                    size="small"
+                    icon="Delete"
+                    title="删除SPU"
+                  ></el-button
+                ></template>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -85,6 +100,7 @@
         @modifyVisibility="changeVisibility"
       ></SkuForm>
     </el-card>
+    <!-- 是否显示展示某个SPU下的SKU的对话框 -->
     <dialogSku
       v-model:show="show"
       :skuInfo="skuInfo"
@@ -94,13 +110,19 @@
 </template>
 
 <script setup lang="ts">
-import { reqGetSkuList, reqGetSpu } from "@/api/product/spu";
+import { onBeforeUnmount, ref, watch } from "vue";
+import {
+  reqDeleteOneSpuItem,
+  reqGetSkuList,
+  reqGetSpu,
+} from "@/api/product/spu";
 import { SkuItem, SpuItem } from "@/api/product/spu/types";
 import useCategoryStore from "@/store/modules/category";
-import { ref, watch } from "vue";
 import SpuForm from "./SpuForm.vue";
 import SkuForm from "./SkuForm.vue";
 import dialogSku from "./dialogSku.vue";
+// @ts-ignore
+import { ElMessage } from "element-plus";
 // 控制三级联动分类组件是否禁用 0->三级联动选择器可使用，并且表示显示已有的SPU场景  1 -> 禁用三级联动选择器，表示添加或修改SPU  2 ->  添加SKU场景
 let visibility = ref<number>(0);
 // 分页器默认页码
@@ -186,7 +208,7 @@ const handleClickAddSkuItem = (row: SpuItem) => {
   SKU.value?.initSkuData(categoryStore.c1Id, categoryStore.c2Id, row);
 };
 
-// 查看某一个SKU列表数据
+// 查看某一个SPU下的SKU列表数据
 const handleClickViewOneSkuList = async (row: SpuItem) => {
   // 进行网络请求
   const result = await reqGetSkuList(row.id as number);
@@ -198,6 +220,29 @@ const handleClickViewOneSkuList = async (row: SpuItem) => {
     show.value = true;
   }
 };
+
+// 删除某一个SPU
+const handleClickDeleteOneSpuItem = async (row: SpuItem) => {
+  // 进行网络请求
+  const result = await reqDeleteOneSpuItem(row.id as number);
+  // code码判断
+  if (result.code === 200) {
+    // 成功提示
+    ElMessage({
+      type: "success",
+      message: `删除${result.message}`,
+    });
+    // 重新获取剩余的SPU数据
+    getSpuList();
+  } else {
+    // 失败提示
+    ElMessage({
+      type: "error",
+      message: `删除${result.message}`,
+    });
+  }
+};
+
 // 监听c3Id的变化，再次发送请求，获取SPU信息
 watch(
   () => categoryStore.c3Id,
@@ -207,6 +252,12 @@ watch(
     getSpuList();
   }
 );
+
+// 切换路由清空Category组件的数据
+onBeforeUnmount(() => {
+  // 清空分类仓库中的数据
+  categoryStore.$reset();
+});
 </script>
 <script lang="ts">
 export default {

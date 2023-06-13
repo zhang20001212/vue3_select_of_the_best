@@ -12,6 +12,7 @@ import {
   SkuItem,
   AddSkuResponse,
   SkuListResponseData,
+  DeleteSpuResponse,
 } from "./types";
 
 // 枚举API所的接口
@@ -34,6 +35,8 @@ enum API {
   ADD_SKU_URL = "/admin/product/saveSkuInfo",
   // 展示某一个SPU下的所有的SKU
   VIEW_FIND_BY_ID_SKU_URL = "/admin/product/findBySpuId",
+  // 删除一个特定的SPU
+  DELETE_ONE_SPU_URL = "/admin/product/deleteSpu",
 }
 
 /**
@@ -152,5 +155,19 @@ export const reqGetSkuList = (
   return request({
     url: API.VIEW_FIND_BY_ID_SKU_URL + `/${id}`,
     method: "GET",
+  });
+};
+
+/**
+ * 删除一个制定的SPU
+ * @param id 某一个SPU的id
+ * @returns DeleteSpuResponse
+ */
+export const reqDeleteOneSpuItem = (
+  id: number | string
+): Promise<DeleteSpuResponse> => {
+  return request({
+    url: API.DELETE_ONE_SPU_URL + `/${id}`,
+    method: "DELETE",
   });
 };
