@@ -77,7 +77,6 @@ export const reqGetOneSkuInfo = (
   });
 };
 
-
 /**
  * 删除一个指定的Sku
  * @param id Sku的Id

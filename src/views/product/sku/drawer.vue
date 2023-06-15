@@ -49,12 +49,17 @@
       <el-row style="margin-top: 10px">
         <el-col :span="0" :offset="0"></el-col>
         <el-col :span="24" :offset="0">
-          <el-carousel :interval="4000" type="card" height="200px" indicator-position="outside">
+          <el-carousel
+            :interval="4000"
+            type="card"
+            height="200px"
+            indicator-position="outside"
+          >
             <el-carousel-item
               v-for="skuImg in item.skuImageList"
               :key="skuImg.imgUrl"
             >
-              <img :src="skuImg.imgUrl" style="width: 100%;height: 100%;" />
+              <img :src="skuImg.imgUrl" style="width: 100%; height: 100%" />
             </el-carousel-item> </el-carousel
         ></el-col>
       </el-row>
