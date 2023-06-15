@@ -94,19 +94,26 @@ export interface SkuItem {
   spuId?: string | number;
   tmId: string | number;
   skuName: string;
+  id?: number;
+  isSale?: number;
   price: string | number;
   weight: string | number;
   skuDesc: string;
   skuAttrValueList: Array<SkuAttrValueItem>;
   skuSaleAttrValueList: Array<SkuSaleAttrValueItem>;
+  skuImageList?: Array<{ imgName: string; imgUrl: string }>;
   skuDefaultImg: string;
 }
 
 export type SkuAttrValueItem = {
+  id?: number;
+  valueName?: string;
   attrId: string | number;
   valueId: string | number;
 };
 export type SkuSaleAttrValueItem = {
+  id?: number;
+  saleAttrValueName: string;
   saleAttrId: string | number;
   saleAttrValueId: string | number;
 };
