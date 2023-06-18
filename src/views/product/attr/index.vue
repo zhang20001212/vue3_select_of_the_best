@@ -284,7 +284,7 @@ const handleEditAttr = (rowItem: Attr) => {
   // 修改visibility的值为1 切换为添加与修改属性的table结构
   visibility.value = 1;
   // 将点击的rowItem对象赋值给attrParams
-  // TODO:用户点击取消时，还是会保存当前值，此处需要进行一次深拷贝，将深拷贝的值在赋值给attrParams
+  // 用户点击取消时，还是会保存当前值，此处需要进行一次深拷贝，将深拷贝的值在赋值给attrParams
   Object.assign(attrParams, JSON.parse(JSON.stringify(rowItem)));
 };
 

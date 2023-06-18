@@ -113,7 +113,7 @@ export type SkuAttrValueItem = {
 };
 export type SkuSaleAttrValueItem = {
   id?: number;
-  saleAttrValueName: string;
+  saleAttrValueName?: string;
   saleAttrId: string | number;
   saleAttrValueId: string | number;
 };
