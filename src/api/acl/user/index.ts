@@ -3,6 +3,7 @@ import {
   AddUserResponse,
   AssignRoleData,
   AssignRoleResponse,
+  DeleteUserInfoResponse,
   RoleListResponseData,
   UserListResponseData,
   UserType,
@@ -22,14 +23,21 @@ enum API {
   POST_ASSIGN_ROLE_URL = "/admin/acl/user/doAssignRole",
   // 删除用户
   DELETE_USER_BY_ID_URL = "/admin/acl/user/remove",
+  // 批量删除用户
+  DELETE_BATCH_USER_URL = "/admin/acl/user/batchRemove",
 }
 
 export const reqGetAllUserList = (
   page: number,
-  limit: number
+  limit: number,
+  username: string
 ): Promise<UserListResponseData> => {
   return request({
     url: API.GET_ALL_USER_URL + `/${page}/${limit}`,
+    method: "GET",
+    params: {
+      username,
+    },
   });
 };
 
@@ -83,11 +91,28 @@ export const reqAssignRoleByUserId = (
 /**
  * 根据用户id删除指定的用户
  * @param id 用户id
- * @returns any
+ * @returns DeleteUserInfoResponse
  */
-export const reqDeleteUserById = (id: number | string) => {
+export const reqDeleteUserById = (
+  id: number | string
+): Promise<DeleteUserInfoResponse> => {
   return request({
     url: API.DELETE_USER_BY_ID_URL + `/${id}`,
     method: "DELETE",
+  });
+};
+
+/**
+ * 批量删除用户
+ * @param data [用户id,用户id]
+ * @returns DeleteUserInfoResponse
+ */
+export const reqBatchRemoveUser = (
+  data: Array<number>
+): Promise<DeleteUserInfoResponse> => {
+  return request({
+    url: API.DELETE_BATCH_USER_URL,
+    method: "DELETE",
+    data,
   });
 };

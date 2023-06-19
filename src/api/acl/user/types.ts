@@ -48,3 +48,7 @@ export type AssignRoleData = {
 export interface AssignRoleResponse extends ResponseData {
   data: null;
 }
+
+export interface DeleteUserInfoResponse extends ResponseData {
+  data: null;
+}
